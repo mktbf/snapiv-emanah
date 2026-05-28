@@ -524,7 +524,7 @@ footer {
   <div class="domain-wrap">
     <div class="domain-head dA">
       <h2>Desatenção</h2>
-      <p>Itens 1 a 9 · Referência clínica: ≥ 6 itens positivos (pontuação 2 ou 3)</p>
+      <p>Itens 1 a 9 · Referência clínica: >= 6 itens positivos (pontuação 2 ou 3)</p>
     </div>
     <div class="domain-body" id="domain-A"></div>
   </div>
@@ -533,7 +533,7 @@ footer {
   <div class="domain-wrap">
     <div class="domain-head dB">
       <h2>Hiperatividade / Impulsividade</h2>
-      <p>Itens 10 a 18 · Referência clínica: ≥ 6 itens positivos (pontuação 2 ou 3)</p>
+      <p>Itens 10 a 18 · Referência clínica: >= 6 itens positivos (pontuação 2 ou 3)</p>
     </div>
     <div class="domain-body" id="domain-B"></div>
   </div>
@@ -542,7 +542,7 @@ footer {
   <div class="domain-wrap">
     <div class="domain-head dC">
       <h2>Sintomas Opositivos</h2>
-      <p>Itens 19 a 25 · Referência clínica: ≥ 4 itens positivos (pontuação 2 ou 3)</p>
+      <p>Itens 19 a 25 · Referência clínica: >= 4 itens positivos (pontuação 2 ou 3)</p>
     </div>
     <div class="domain-body" id="domain-C"></div>
   </div>
@@ -655,7 +655,7 @@ const OPTIONS = [
       `<div class="radio-row">` +
         OPTIONS.map(o =>
           `<div class="r-opt">
-            <input type="radio" name="q${q.id}" id="q${q.id}v${o.v}" value="${o.v}" onchange="onAnswer()">
+            <input type="radio" name="q${q.id}" id="q${q.id}v${o.v}" value="${o.v}" class="r-input">
             <label for="q${q.id}v${o.v}">
               <span class="rv">${o.v}</span>
               <span class="rl">${o.l}</span>
@@ -665,6 +665,11 @@ const OPTIONS = [
       `</div>`;
     container.appendChild(div);
   });
+});
+
+// Event delegation - CSP safe
+document.addEventListener("change", function(e){
+  if(e.target.classList.contains("r-input")) onAnswer();
 });
 
 // Default date = today
@@ -898,9 +903,9 @@ function buildPDF() {
     startY: Y,
     head: [['Domínio', 'Itens', 'Pontuação', 'Itens positivos', 'Ref. clínica']],
     body: [
-      ['Desatenção',                '1 – 9',   `${RESULT.dA.score}/27`, `${RESULT.dA.pos} / 9`, '≥ 6 itens positivos'],
-      ['Hiperatividade/Impuls.',    '10 – 18', `${RESULT.dB.score}/27`, `${RESULT.dB.pos} / 9`, '≥ 6 itens positivos'],
-      ['Sintomas Opositivos',       '19 – 25', `${RESULT.dC.score}/21`, `${RESULT.dC.pos} / 7`, '≥ 4 itens positivos'],
+      ['Desatenção',                '1 – 9',   `${RESULT.dA.score}/27`, `${RESULT.dA.pos} / 9`, '>= 6 itens positivos'],
+      ['Hiperatividade/Impuls.',    '10 – 18', `${RESULT.dB.score}/27`, `${RESULT.dB.pos} / 9`, '>= 6 itens positivos'],
+      ['Sintomas Opositivos',       '19 – 25', `${RESULT.dC.score}/21`, `${RESULT.dC.pos} / 7`, '>= 4 itens positivos'],
       ['TOTAL',                     '1 – 25',  `${RESULT.total}/75`,
         `${RESULT.dA.pos + RESULT.dB.pos + RESULT.dC.pos} / 25`, ''],
     ],
