@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SNAP-IV · Clínica Emanah</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+<style>
+:root {
+  --teal:       #1C5F6E;
+  --teal-dk:    #134450;
+  --teal-lt:    #E8F4F7;
+  --gold:       #C9985A;
+  --gold-lt:    #FDF4E9;
+  --plum:       #3B2F5E;
+  --bg:         #F2EFE9;
+  --card:       #FFFFFF;
+  --line:       #E0DAD1;
+  --text:       #252B35;
+  --muted:      #7E8B96;
+  --danger:     #B83232;
+  --success:    #207356;
+  --r-none:     #F5F5F5;
+  --r-some:     #EBF4FF;
+  --r-freq:     #FFF3E0;
+  --r-always:   #FDEAEA;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── HEADER ─────────────────────────────── */
+.header {
+  background: var(--teal);
+  color: #fff;
+  padding: 2.25rem 1.5rem 2rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.header::before {
+  content: '';
+  position: absolute;
+  width: 280px; height: 280px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.04);
+  top: -80px; right: -60px;
+}
+
+.header::after {
+  content: '';
+  position: absolute;
+  width: 180px; height: 180px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.04);
+  bottom: -60px; left: -40px;
+}
+
+.clinic-tag {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.55);
+  margin-bottom: 0.6rem;
+}
+
+.header h1 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(2.4rem, 7vw, 3.2rem);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 1;
+  margin-bottom: 0.5rem;
+}
+
+.header .subtitle {
+  font-size: 0.82rem;
+  color: rgba(255,255,255,0.62);
+  max-width: 380px;
+  margin: 0 auto 1.4rem;
+  line-height: 1.6;
+}
+
+/* progress */
+.prog-track {
+  background: rgba(255,255,255,0.15);
+  height: 3px;
+  border-radius: 2px;
+  max-width: 320px;
+  margin: 0 auto;
+}
+.prog-fill {
+  height: 100%;
+  background: var(--gold);
+  border-radius: 2px;
+  transition: width 0.35s ease;
+  width: 0%;
+}
+.prog-label {
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.45);
+  margin-top: 0.45rem;
+  text-align: center;
+}
+
+/* ── LAYOUT ──────────────────────────────── */
+main {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 2rem 1rem 5rem;
+}
+
+/* ── ORIENTATION ─────────────────────────── */
+.orient {
+  background: white;
+  border-left: 3px solid var(--gold);
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.75rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+  line-height: 1.65;
+}
+.orient strong { color: var(--text); }
+
+/* ── SECTION CARD ────────────────────────── */
+.s-card {
+  background: var(--card);
+  border-radius: 14px;
+  padding: 1.5rem;
+  margin-bottom: 1.75rem;
+  box-shadow: 0 2px 14px rgba(0,0,0,0.055);
+}
+
+.s-card-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--teal);
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-bottom: 1.25rem;
+}
+
+.s-badge {
+  width: 26px; height: 26px;
+  background: var(--teal);
+  color: #fff;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+  font-family: 'DM Sans', sans-serif;
+  flex-shrink: 0;
+}
+
+/* ── PATIENT FORM ────────────────────────── */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.9rem;
+}
+@media (max-width: 560px) { .form-grid { grid-template-columns: 1fr; } }
+
+.fg-full { grid-column: 1 / -1; }
+
+.fld { display: flex; flex-direction: column; gap: 0.35rem; }
+
+.fld label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.fld input,
+.fld textarea {
+  border: 1.5px solid var(--line);
+  border-radius: 8px;
+  padding: 0.6rem 0.85rem;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.92rem;
+  color: var(--text);
+  background: #FAFAF8;
+  transition: border-color 0.18s, background 0.18s;
+}
+.fld input:focus,
+.fld textarea:focus {
+  outline: none;
+  border-color: var(--teal);
+  background: #fff;
+}
+.fld textarea { resize: vertical; min-height: 68px; line-height: 1.5; }
+
+/* ── DOMAIN BLOCK ────────────────────────── */
+.domain-wrap { margin-bottom: 1.75rem; border-radius: 14px; overflow: hidden; box-shadow: 0 2px 14px rgba(0,0,0,0.055); }
+
+.domain-head {
+  padding: 1rem 1.5rem;
+  color: #fff;
+}
+.domain-head.dA { background: linear-gradient(120deg, #1C5F6E 0%, #2685A0 100%); }
+.domain-head.dB { background: linear-gradient(120deg, #7B4F18 0%, #C07A2B 100%); }
+.domain-head.dC { background: linear-gradient(120deg, #3B2F5E 0%, #5B4FA0 100%); }
+
+.domain-head h2 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.25rem;
+  font-weight: 500;
+}
+.domain-head p {
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.65);
+  margin-top: 0.15rem;
+}
+
+.domain-body { background: #fff; }
+
+/* ── QUESTION ITEM ───────────────────────── */
+.q-item {
+  padding: 0.95rem 1.5rem;
+  border-bottom: 1px solid #F0EDE8;
+  transition: background 0.12s;
+}
+.q-item:last-child { border-bottom: none; }
+.q-item:hover { background: #FAFAF8; }
+
+.q-text {
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.5;
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+.q-num { color: var(--muted); font-weight: 400; min-width: 18px; font-size: 0.82rem; padding-top: 1px; flex-shrink: 0; }
+
+/* Radio pills */
+.radio-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.4rem; }
+
+.r-opt input[type="radio"] { display: none; }
+
+.r-opt label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.15rem;
+  padding: 0.5rem 0.2rem;
+  border: 1.5px solid var(--line);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-transform: none;
+  letter-spacing: 0;
+  line-height: 1.2;
+  background: #FAFAF8;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.r-opt label .rv {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.3rem;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--teal);
+}
+
+.r-opt label .rl {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--muted);
+  text-align: center;
+}
+
+/* checked states per option value */
+.r-opt input[value="0"]:checked + label { border-color: #AAB8C2; background: #F0F4F8; }
+.r-opt input[value="1"]:checked + label { border-color: #5A9EC7; background: #E8F4FF; }
+.r-opt input[value="2"]:checked + label { border-color: var(--gold); background: var(--gold-lt); }
+.r-opt input[value="3"]:checked + label { border-color: var(--danger); background: #FDEAEA; }
+
+.r-opt input[value="0"]:checked + label .rv { color: #445566; }
+.r-opt input[value="1"]:checked + label .rv { color: #2060A0; }
+.r-opt input[value="2"]:checked + label .rv { color: var(--gold); }
+.r-opt input[value="3"]:checked + label .rv { color: var(--danger); }
+
+.r-opt input:checked + label .rl { color: inherit; opacity: 0.85; }
+
+/* ── SCORE WIDGET ────────────────────────── */
+.score-box {
+  background: var(--card);
+  border-radius: 14px;
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.75rem;
+  box-shadow: 0 2px 14px rgba(0,0,0,0.055);
+}
+
+.score-box .s-card-title { margin-bottom: 1rem; }
+
+.score-cols { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; }
+@media (max-width: 420px) { .score-cols { grid-template-columns: 1fr; } }
+
+.sc-tile {
+  border-radius: 10px;
+  padding: 1rem 0.75rem;
+  text-align: center;
+  border: 1.5px solid;
+}
+.sc-tile.sA { background: var(--teal-lt); border-color: #B0D5E0; }
+.sc-tile.sB { background: var(--gold-lt); border-color: #E8C88A; }
+.sc-tile.sC { background: #F0EEFF; border-color: #C4BAEE; }
+
+.sc-name { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 0.4rem; }
+.sc-val {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2.4rem;
+  font-weight: 600;
+  color: var(--teal);
+  line-height: 1;
+}
+.sc-tile.sB .sc-val { color: #8B5820; }
+.sc-tile.sC .sc-val { color: var(--plum); }
+.sc-pos { font-size: 0.68rem; color: var(--muted); margin-top: 0.3rem; }
+
+/* ── SUBMIT ──────────────────────────────── */
+.submit-area { text-align: center; margin-top: 0.5rem; }
+
+.btn-main {
+  background: var(--teal);
+  color: #fff;
+  border: none;
+  padding: 0.95rem 3rem;
+  border-radius: 50px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.97rem;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.04em;
+  transition: all 0.2s;
+  box-shadow: 0 4px 18px rgba(28,95,110,0.32);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.btn-main:hover:not(:disabled) { background: var(--teal-dk); transform: translateY(-1px); box-shadow: 0 7px 22px rgba(28,95,110,0.38); }
+.btn-main:disabled { background: var(--muted); box-shadow: none; transform: none; cursor: not-allowed; }
+
+.submit-note { font-size: 0.78rem; color: var(--muted); margin-top: 0.75rem; line-height: 1.5; }
+
+.err-box {
+  display: none;
+  background: #FEE8E6;
+  border: 1px solid #F0C0BC;
+  color: var(--danger);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  font-size: 0.85rem;
+  margin-top: 1rem;
+  line-height: 1.5;
+}
+
+/* ── SUCCESS SCREEN ──────────────────────── */
+#success-screen {
+  display: none;
+  text-align: center;
+  padding: 3.5rem 1.5rem 2rem;
+  animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+.success-ring {
+  width: 84px; height: 84px;
+  background: var(--success);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 1.5rem;
+  font-size: 2.2rem;
+  box-shadow: 0 8px 28px rgba(32,115,86,0.3);
+}
+
+.success-screen h2 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2rem;
+  font-weight: 500;
+  color: var(--teal);
+  margin-bottom: 0.5rem;
+}
+
+.success-screen p {
+  color: var(--muted);
+  max-width: 360px;
+  margin: 0 auto;
+  line-height: 1.65;
+  font-size: 0.9rem;
+}
+
+.btn-pdf {
+  background: var(--gold);
+  color: #fff;
+  border: none;
+  padding: 0.9rem 2.5rem;
+  border-radius: 50px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.03em;
+  transition: all 0.2s;
+  box-shadow: 0 4px 18px rgba(201,152,90,0.38);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+}
+.btn-pdf:hover { background: #B5864A; transform: translateY(-1px); }
+
+/* ── FOOTER ──────────────────────────────── */
+footer {
+  text-align: center;
+  font-size: 0.72rem;
+  color: var(--muted);
+  padding: 1.5rem 1rem;
+  line-height: 1.7;
+  border-top: 1px solid var(--line);
+  margin-top: 2rem;
+}
+
+/* ── LOADING SPINNER ─────────────────────── */
+.spinner {
+  display: inline-block;
+  width: 16px; height: 16px;
+  border: 2px solid rgba(255,255,255,0.4);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  vertical-align: middle;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+@media (max-width: 480px) {
+  .q-item { padding: 0.85rem 1rem; }
+  .domain-head { padding: 0.85rem 1rem; }
+  .s-card { padding: 1.25rem 1rem; }
+  .score-box { padding: 1.25rem 1rem; }
+  .r-opt label { padding: 0.4rem 0.15rem; }
+  .r-opt label .rv { font-size: 1.1rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="clinic-tag">Clínica Emanah</div>
+  <h1>SNAP-IV</h1>
+  <p class="subtitle">Escala de rastreamento de sintomas de TDAH e sintomas opositivos</p>
+  <div class="prog-track">
+    <div class="prog-fill" id="prog-fill"></div>
+  </div>
+  <div class="prog-label" id="prog-label">0 de 25 respondidas</div>
+</div>
+
+<main>
+
+<!-- FORM SCREEN -->
+<div id="form-screen">
+
+  <div class="orient">
+    <strong>Orientação:</strong> Para cada afirmação abaixo, selecione a opção que melhor descreve o comportamento observado na criança.
+    Pontuação: <strong>0 = Nunca · 1 = Às vezes · 2 = Frequentemente · 3 = Muito frequentemente.</strong>
+    Responda todos os 25 itens antes de enviar.
+  </div>
+
+  <!-- Patient info -->
+  <div class="s-card">
+    <div class="s-card-title">
+      <div class="s-badge">i</div>
+      Dados do Paciente
+    </div>
+    <div class="form-grid">
+      <div class="fld fg-full">
+        <label for="nome">Nome do paciente *</label>
+        <input type="text" id="nome" placeholder="Nome completo" autocomplete="off">
+      </div>
+      <div class="fld">
+        <label for="idade">Idade</label>
+        <input type="number" id="idade" min="1" max="99" placeholder="Ex: 8">
+      </div>
+      <div class="fld">
+        <label for="data">Data de preenchimento</label>
+        <input type="date" id="data">
+      </div>
+      <div class="fld">
+        <label for="respondente">Respondente</label>
+        <input type="text" id="respondente" placeholder="Ex: mãe, pai, professora">
+      </div>
+      <div class="fld">
+        <label for="profissional">Profissional responsável</label>
+        <input type="text" id="profissional" placeholder="Nome do profissional">
+      </div>
+      <div class="fld fg-full">
+        <label for="obs">Observações</label>
+        <textarea id="obs" placeholder="Informações adicionais relevantes..."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- Domain A -->
+  <div class="domain-wrap">
+    <div class="domain-head dA">
+      <h2>Desatenção</h2>
+      <p>Itens 1 a 9 · Referência clínica: ≥ 6 itens positivos (pontuação 2 ou 3)</p>
+    </div>
+    <div class="domain-body" id="domain-A"></div>
+  </div>
+
+  <!-- Domain B -->
+  <div class="domain-wrap">
+    <div class="domain-head dB">
+      <h2>Hiperatividade / Impulsividade</h2>
+      <p>Itens 10 a 18 · Referência clínica: ≥ 6 itens positivos (pontuação 2 ou 3)</p>
+    </div>
+    <div class="domain-body" id="domain-B"></div>
+  </div>
+
+  <!-- Domain C -->
+  <div class="domain-wrap">
+    <div class="domain-head dC">
+      <h2>Sintomas Opositivos</h2>
+      <p>Itens 19 a 25 · Referência clínica: ≥ 4 itens positivos (pontuação 2 ou 3)</p>
+    </div>
+    <div class="domain-body" id="domain-C"></div>
+  </div>
+
+  <!-- Score summary -->
+  <div class="score-box">
+    <div class="s-card-title">
+      <div class="s-badge" style="background:var(--gold)">Σ</div>
+      Pontuação em tempo real
+    </div>
+    <div class="score-cols">
+      <div class="sc-tile sA">
+        <div class="sc-name">Desatenção</div>
+        <div class="sc-val" id="sc-A">—</div>
+        <div class="sc-pos" id="sc-Ap">— itens positivos</div>
+      </div>
+      <div class="sc-tile sB">
+        <div class="sc-name">Hiper./Impuls.</div>
+        <div class="sc-val" id="sc-B">—</div>
+        <div class="sc-pos" id="sc-Bp">— itens positivos</div>
+      </div>
+      <div class="sc-tile sC">
+        <div class="sc-name">Opositor</div>
+        <div class="sc-val" id="sc-C">—</div>
+        <div class="sc-pos" id="sc-Cp">— itens positivos</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="submit-area">
+    <button class="btn-main" id="btn-submit" onclick="submitForm()">
+      Enviar Formulário
+    </button>
+    <p class="submit-note">Ao enviar, as respostas serão registradas e um PDF com os resultados será gerado automaticamente.</p>
+    <div class="err-box" id="err-box"></div>
+  </div>
+
+</div><!-- /form-screen -->
+
+<!-- SUCCESS SCREEN -->
+<div id="success-screen" class="success-screen">
+  <div class="success-ring">✓</div>
+  <h2>Formulário enviado!</h2>
+  <p>As respostas foram registradas com sucesso. O PDF com os resultados completos foi gerado e iniciado automaticamente.</p>
+  <button class="btn-pdf" onclick="downloadPDF()">
+    ⬇ Baixar PDF novamente
+  </button>
+  <p style="font-size:0.78rem;color:var(--muted);margin-top:1.5rem;line-height:1.6;">
+    Guarde este documento e entregue-o ao profissional responsável.<br>
+    Dúvidas? Entre em contato com a Clínica Emanah.
+  </p>
+</div>
+
+</main>
+
+<footer>
+  SNAP-IV · Clínica Emanah<br>
+  Este instrumento auxilia no rastreio e acompanhamento, mas não substitui avaliação clínica completa e contextualizada.
+</footer>
+
+<script>
+/* ──────────────────────────────────────────
+   DATA
+────────────────────────────────────────── */
+const QUESTIONS = [
+  { id:1,  d:'A', t:'Não consegue prestar muita atenção a detalhes ou comete erros por descuido.' },
+  { id:2,  d:'A', t:'Tem dificuldade de manter a atenção em tarefas ou atividades.' },
+  { id:3,  d:'A', t:'Parece não escutar quando lhe dirigem a palavra.' },
+  { id:4,  d:'A', t:'Não segue instruções até o fim e não termina tarefas.' },
+  { id:5,  d:'A', t:'Tem dificuldade para organizar tarefas e atividades.' },
+  { id:6,  d:'A', t:'Evita ou não gosta de tarefas que exigem esforço mental prolongado.' },
+  { id:7,  d:'A', t:'Perde coisas necessárias para atividades.' },
+  { id:8,  d:'A', t:'Distrai-se facilmente com estímulos externos.' },
+  { id:9,  d:'A', t:'É esquecido em atividades do dia a dia.' },
+  { id:10, d:'B', t:'Fica mexendo as mãos ou os pés ou se remexe na cadeira.' },
+  { id:11, d:'B', t:'Sai do lugar em situações em que deveria permanecer sentado.' },
+  { id:12, d:'B', t:'Corre ou sobe em coisas em situações inadequadas.' },
+  { id:13, d:'B', t:'Tem dificuldade de brincar ou se envolver silenciosamente em atividades.' },
+  { id:14, d:'B', t:'Está frequentemente "a mil" ou age como se estivesse "a todo vapor".' },
+  { id:15, d:'B', t:'Fala em excesso.' },
+  { id:16, d:'B', t:'Responde antes da pergunta terminar.' },
+  { id:17, d:'B', t:'Tem dificuldade de esperar sua vez.' },
+  { id:18, d:'B', t:'Interrompe ou se intromete em conversas ou atividades.' },
+  { id:19, d:'C', t:'Discute com adultos ou figuras de autoridade.' },
+  { id:20, d:'C', t:'Desafia ou recusa regras e pedidos.' },
+  { id:21, d:'C', t:'Faz coisas para irritar os outros.' },
+  { id:22, d:'C', t:'Culpa os outros por seus erros ou mau comportamento.' },
+  { id:23, d:'C', t:'É sensível ou facilmente incomodado.' },
+  { id:24, d:'C', t:'Fica irritado ou ressentido.' },
+  { id:25, d:'C', t:'É rancoroso ou vingativo.' },
+];
+
+const OPTIONS = [
+  { v:0, l:'Nunca',        s:'0' },
+  { v:1, l:'Às vezes',     s:'1' },
+  { v:2, l:'Frequente',    s:'2' },
+  { v:3, l:'Muito freq.',  s:'3' },
+];
+
+/* ──────────────────────────────────────────
+   RENDER QUESTIONS
+────────────────────────────────────────── */
+['A','B','C'].forEach(d => {
+  const container = document.getElementById('domain-' + d);
+  QUESTIONS.filter(q => q.d === d).forEach(q => {
+    const div = document.createElement('div');
+    div.className = 'q-item';
+    div.innerHTML =
+      `<div class="q-text"><span class="q-num">${q.id}.</span><span>${q.t}</span></div>` +
+      `<div class="radio-row">` +
+        OPTIONS.map(o =>
+          `<div class="r-opt">
+            <input type="radio" name="q${q.id}" id="q${q.id}v${o.v}" value="${o.v}" onchange="onAnswer()">
+            <label for="q${q.id}v${o.v}">
+              <span class="rv">${o.v}</span>
+              <span class="rl">${o.l}</span>
+            </label>
+          </div>`
+        ).join('') +
+      `</div>`;
+    container.appendChild(div);
+  });
+});
+
+// Default date = today
+document.getElementById('data').value = new Date().toLocaleDateString('en-CA');
+
+/* ──────────────────────────────────────────
+   LIVE SCORE
+────────────────────────────────────────── */
+function getAnswers() {
+  return QUESTIONS.map(q => {
+    const el = document.querySelector(`input[name="q${q.id}"]:checked`);
+    return el !== null ? +el.value : null;
+  });
+}
+
+function calcDomain(answers, from, to) {
+  const vals = answers.slice(from, to);
+  const filled = vals.filter(v => v !== null);
+  if (!filled.length) return { score: null, pos: 0, answered: 0 };
+  return {
+    score:    filled.reduce((a, b) => a + b, 0),
+    pos:      filled.filter(v => v >= 2).length,
+    answered: filled.length,
+  };
+}
+
+function onAnswer() {
+  const ans = getAnswers();
+  const filled = ans.filter(v => v !== null).length;
+  document.getElementById('prog-fill').style.width = (filled / 25 * 100) + '%';
+  document.getElementById('prog-label').textContent = `${filled} de 25 respondidas`;
+
+  const dA = calcDomain(ans, 0, 9);
+  const dB = calcDomain(ans, 9, 18);
+  const dC = calcDomain(ans, 18, 25);
+
+  function setScore(id, posId, d) {
+    document.getElementById(id).textContent   = d.score !== null ? d.score : '—';
+    document.getElementById(posId).textContent = d.score !== null
+      ? `${d.pos} item${d.pos !== 1 ? 's' : ''} positivo${d.pos !== 1 ? 's' : ''}`
+      : '— itens positivos';
+  }
+  setScore('sc-A','sc-Ap', dA);
+  setScore('sc-B','sc-Bp', dB);
+  setScore('sc-C','sc-Cp', dC);
+}
+
+/* ──────────────────────────────────────────
+   STORE RESULT for PDF
+────────────────────────────────────────── */
+let RESULT = null;
+
+/* ──────────────────────────────────────────
+   SUBMIT
+────────────────────────────────────────── */
+async function submitForm() {
+  const errEl  = document.getElementById('err-box');
+  const btn    = document.getElementById('btn-submit');
+  errEl.style.display = 'none';
+
+  const nome = document.getElementById('nome').value.trim();
+  if (!nome) {
+    errEl.textContent = 'Por favor, informe o nome do paciente.';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  const ans = getAnswers();
+  const missing = ans.filter(v => v === null).length;
+  if (missing > 0) {
+    errEl.textContent = `Ainda ${missing} pergunta${missing > 1 ? 's' : ''} sem resposta. Por favor, responda todos os itens antes de enviar.`;
+    errEl.style.display = 'block';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Enviando…';
+
+  const dateRaw   = document.getElementById('data').value;
+  const dateLabel = dateRaw ? new Date(dateRaw + 'T12:00:00').toLocaleDateString('pt-BR') : '';
+
+  const dA = calcDomain(ans, 0, 9);
+  const dB = calcDomain(ans, 9, 18);
+  const dC = calcDomain(ans, 18, 25);
+
+  RESULT = {
+    nome,
+    idade:        document.getElementById('idade').value || '—',
+    data:         dateLabel,
+    respondente:  document.getElementById('respondente').value || '—',
+    profissional: document.getElementById('profissional').value || '—',
+    obs:          document.getElementById('obs').value || '',
+    answers:      ans,
+    dA, dB, dC,
+    total:        dA.score + dB.score + dC.score,
+  };
+
+  /* Build readable text for email */
+  const labelMap = ['Nunca','Às vezes','Frequentemente','Muito frequentemente'];
+  const lines = QUESTIONS.map(q =>
+    `${String(q.id).padStart(2,'0')}. ${q.t}\n    → ${labelMap[ans[q.id-1]]} (${ans[q.id-1]})`
+  ).join('\n');
+
+  const emailPayload = {
+    _subject: `SNAP-IV – ${RESULT.nome} – ${RESULT.data}`,
+    Paciente:       RESULT.nome,
+    Idade:          RESULT.idade,
+    Data:           RESULT.data,
+    Respondente:    RESULT.respondente,
+    Profissional:   RESULT.profissional,
+    Observacoes:    RESULT.obs || '—',
+    '--- RESULTADOS ---': '',
+    'Desatenção (1-9)':               `Pontuação ${RESULT.dA.score}/27 | Itens positivos: ${RESULT.dA.pos}/9`,
+    'Hiperatividade/Impuls. (10-18)': `Pontuação ${RESULT.dB.score}/27 | Itens positivos: ${RESULT.dB.pos}/9`,
+    'Sint. Opositivos (19-25)':       `Pontuação ${RESULT.dC.score}/21 | Itens positivos: ${RESULT.dC.pos}/7`,
+    TOTAL:                            `${RESULT.total}/75`,
+    '--- RESPOSTAS ---': lines,
+  };
+
+  /* ── FORMSUBMIT (sem conta, sem configuração) ── */
+  /* O email abaixo recebe as respostas de cada paciente */
+  const DESTINO_EMAIL = 'grupobomfuturo.mt@gmail.com';
+  try {
+    await fetch(`https://formsubmit.co/ajax/${DESTINO_EMAIL}`, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({
+        ...emailPayload,
+        _subject:   `SNAP-IV – ${RESULT.nome} – ${RESULT.data}`,
+        _captcha:   'false',
+        _template:  'table',
+      }),
+    });
+  } catch(e) { /* Segue mesmo se o email falhar */ }
+
+  /* Show success & auto-download PDF */
+  document.getElementById('form-screen').style.display = 'none';
+  document.getElementById('success-screen').style.display = 'block';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  setTimeout(downloadPDF, 600);
+}
+
+/* ──────────────────────────────────────────
+   PDF GENERATION
+────────────────────────────────────────── */
+function downloadPDF() {
+  if (!RESULT) return;
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+  const PW = 210, ML = 16, MR = 16, CW = PW - ML - MR;
+  const labelMap = ['Nunca','Às vezes','Frequentemente','Muito frequentemente'];
+
+  /* ── HEADER ── */
+  doc.setFillColor(28, 95, 110);
+  doc.rect(0, 0, PW, 40, 'F');
+
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(8);
+  doc.setTextColor(150, 210, 225);
+  doc.text('CLÍNICA EMANAH', ML, 11);
+
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(22);
+  doc.setTextColor(255,255,255);
+  doc.text('SNAP-IV', ML, 22);
+
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(8.5);
+  doc.setTextColor(180, 220, 228);
+  doc.text('Escala de rastreamento de sintomas de TDAH e sintomas opositivos', ML, 30);
+
+  doc.setTextColor(180,220,228);
+  doc.text(`Gerado em: ${new Date().toLocaleDateString('pt-BR')}`, PW - MR, 30, { align:'right' });
+
+  let Y = 48;
+
+  /* ── PATIENT INFO ── */
+  doc.setFillColor(242, 239, 233);
+  doc.roundedRect(ML, Y, CW, 30, 3, 3, 'F');
+
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(8.5);
+  doc.setTextColor(28, 95, 110);
+  doc.text('DADOS DO PACIENTE', ML + 4, Y + 7);
+
+  const fields = [
+    ['Paciente:',     RESULT.nome],
+    ['Idade:',        RESULT.idade !== '—' ? RESULT.idade + ' anos' : '—'],
+    ['Data:',         RESULT.data || '—'],
+    ['Respondente:',  RESULT.respondente],
+    ['Profissional:', RESULT.profissional],
+  ];
+
+  doc.setFontSize(8.5);
+  doc.setTextColor(37, 43, 53);
+  fields.forEach(([lbl, val], i) => {
+    const col = i < 3 ? 0 : 1;
+    const row = i < 3 ? i : i - 3;
+    const X = ML + 4 + col * 91;
+    const LY = Y + 14 + row * 7;
+    doc.setFont('helvetica','bold');
+    doc.text(lbl, X, LY);
+    doc.setFont('helvetica','normal');
+    doc.text(String(val), X + doc.getTextWidth(lbl) + 2, LY);
+  });
+
+  Y += 34;
+
+  if (RESULT.obs) {
+    doc.setFont('helvetica','italic');
+    doc.setFontSize(8);
+    doc.setTextColor(120,140,155);
+    const obsLines = doc.splitTextToSize('Obs.: ' + RESULT.obs, CW);
+    doc.text(obsLines, ML, Y);
+    Y += obsLines.length * 4 + 4;
+  }
+
+  /* ── RESULTS TABLE ── */
+  doc.autoTable({
+    startY: Y,
+    head: [['Domínio', 'Itens', 'Pontuação', 'Itens positivos', 'Ref. clínica']],
+    body: [
+      ['Desatenção',                '1 – 9',   `${RESULT.dA.score}/27`, `${RESULT.dA.pos} / 9`, '≥ 6 itens positivos'],
+      ['Hiperatividade/Impuls.',    '10 – 18', `${RESULT.dB.score}/27`, `${RESULT.dB.pos} / 9`, '≥ 6 itens positivos'],
+      ['Sintomas Opositivos',       '19 – 25', `${RESULT.dC.score}/21`, `${RESULT.dC.pos} / 7`, '≥ 4 itens positivos'],
+      ['TOTAL',                     '1 – 25',  `${RESULT.total}/75`,
+        `${RESULT.dA.pos + RESULT.dB.pos + RESULT.dC.pos} / 25`, ''],
+    ],
+    theme: 'striped',
+    headStyles:           { fillColor:[28,95,110], textColor:255, fontSize:8.5, fontStyle:'bold' },
+    bodyStyles:           { fontSize:8.5 },
+    alternateRowStyles:   { fillColor:[242,239,233] },
+    columnStyles: {
+      0: { fontStyle:'bold' },
+      2: { halign:'center' },
+      3: { halign:'center' },
+    },
+    margin: { left:ML, right:MR },
+  });
+
+  Y = doc.lastAutoTable.finalY + 10;
+
+  /* ── DETAILED QUESTIONS per domain ── */
+  const domains = [
+    { lbl:'Desatenção',                 color:[28,95,110],  range:[0,9]  },
+    { lbl:'Hiperatividade/Impulsividade', color:[123,79,24], range:[9,18] },
+    { lbl:'Sintomas Opositivos',        color:[59,47,94],   range:[18,25]},
+  ];
+
+  domains.forEach(dd => {
+    const qs = QUESTIONS.slice(dd.range[0], dd.range[1]);
+    doc.autoTable({
+      startY: Y,
+      head: [['#', 'Afirmação', 'Resposta', 'Pont.']],
+      body: qs.map(q => [
+        q.id,
+        q.t,
+        labelMap[RESULT.answers[q.id - 1]],
+        RESULT.answers[q.id - 1],
+      ]),
+      theme: 'striped',
+      headStyles: {
+        fillColor: dd.color,
+        textColor: 255,
+        fontSize: 8.5,
+        fontStyle: 'bold',
+        halign: 'left',
+      },
+      bodyStyles: { fontSize: 8 },
+      alternateRowStyles: { fillColor:[248,246,242] },
+      columnStyles: {
+        0: { cellWidth:10, halign:'center' },
+        1: { cellWidth:118 },
+        2: { cellWidth:38 },
+        3: { cellWidth:10, halign:'center' },
+      },
+      styles: { overflow:'linebreak' },
+      margin: { left:ML, right:MR },
+      didParseCell(data) {
+        /* highlight positive items (score ≥ 2) in red */
+        if (data.section === 'body' && data.column.index === 3) {
+          const score = +data.cell.text[0];
+          if (score >= 2) {
+            data.cell.styles.textColor = [180, 40, 40];
+            data.cell.styles.fontStyle = 'bold';
+          }
+        }
+        if (data.section === 'body' && data.column.index === 2) {
+          const q = qs[data.row.index];
+          if (q && RESULT.answers[q.id - 1] >= 2) {
+            data.cell.styles.textColor = [180, 40, 40];
+            data.cell.styles.fontStyle = 'bold';
+          }
+        }
+      },
+      didDrawPage() {
+        /* mini header on subsequent pages */
+        doc.setFillColor(28,95,110);
+        doc.rect(0, 0, PW, 10, 'F');
+        doc.setFont('helvetica','bold');
+        doc.setFontSize(7.5);
+        doc.setTextColor(255,255,255);
+        doc.text(`SNAP-IV · ${RESULT.nome} · ${RESULT.data}`, ML, 7);
+      },
+    });
+    Y = doc.lastAutoTable.finalY + 8;
+  });
+
+  /* ── FOOTER on every page ── */
+  const pageCount = doc.getNumberOfPages();
+  for (let p = 1; p <= pageCount; p++) {
+    doc.setPage(p);
+    doc.setDrawColor(28, 95, 110);
+    doc.setLineWidth(0.4);
+    doc.line(ML, 286, PW - MR, 286);
+    doc.setFont('helvetica','italic');
+    doc.setFontSize(7);
+    doc.setTextColor(150, 160, 170);
+    doc.text(
+      'Este instrumento auxilia no rastreio e acompanhamento, mas não substitui avaliação clínica completa e contextualizada.',
+      ML, 291
+    );
+    doc.text(`Página ${p} / ${pageCount}`, PW - MR, 291, { align:'right' });
+  }
+
+  /* save */
+  const safeName = RESULT.nome.replace(/\s+/g,'_').replace(/[^a-zA-Z0-9_]/g,'');
+  const safeDate = RESULT.data.replace(/\//g,'-');
+  doc.save(`SNAP-IV_${safeName}_${safeDate}.pdf`);
+}
+</script>
+</body>
+</html>
