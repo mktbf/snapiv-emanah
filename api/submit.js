@@ -80,7 +80,7 @@ module.exports = async function handler(req, res) {
 
     await transporter.sendMail({
       from: `"Clínica Emanah – SNAP-IV" <${process.env.GMAIL_USER}>`,
-      to: 'dani_lbc@hotmail.com',
+      to: ['dani_lbc@hotmail.com', 'jean_toya@hotmail.com'],
       subject: `📋 SNAP-IV – ${nome} – ${data}`,
       html: htmlBody,
       attachments: pdfBase64 ? [{
