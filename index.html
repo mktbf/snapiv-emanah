@@ -784,21 +784,32 @@ async function submitForm() {
     '--- RESPOSTAS ---': lines,
   };
 
-  /* ── FORMSUBMIT (sem conta, sem configuração) ── */
-  /* O email abaixo recebe as respostas de cada paciente */
-  const DESTINO_EMAIL = 'grupobomfuturo.mt@gmail.com';
+  /* ── Gera PDF base64 para enviar em anexo ── */
+  const sn = RESULT.nome.replace(/\s+/g,'_').replace(/[^a-zA-Z0-9_]/g,'');
+  const sd = RESULT.data.replace(/\//g,'-');
+  const pdfFilename = `SNAP-IV_${sn}_${sd}.pdf`;
+  let pdfBase64 = null;
   try {
-    await fetch(`https://formsubmit.co/ajax/${DESTINO_EMAIL}`, {
-      method:  'POST',
-      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+    const tmpDoc = buildPDF();
+    pdfBase64 = tmpDoc.output('datauristring').split(',')[1];
+  } catch(e) {}
+
+  /* ── Envia para API Vercel com PDF em anexo ── */
+  try {
+    await fetch('/api/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        ...emailPayload,
-        _subject:   `SNAP-IV – ${RESULT.nome} – ${RESULT.data}`,
-        _captcha:   'false',
-        _template:  'table',
+        nome: RESULT.nome, idade: RESULT.idade, data: RESULT.data,
+        respondente: RESULT.respondente, profissional: RESULT.profissional, obs: RESULT.obs,
+        desatencao:    { score: RESULT.dA.score, pos: RESULT.dA.pos },
+        hiperatividade:{ score: RESULT.dB.score, pos: RESULT.dB.pos },
+        opositivos:    { score: RESULT.dC.score, pos: RESULT.dC.pos },
+        total: RESULT.total, respostas: lines,
+        pdfBase64, pdfFilename,
       }),
     });
-  } catch(e) { /* Segue mesmo se o email falhar */ }
+  } catch(e) { /* segue mesmo se falhar */ }
 
   /* Show success & auto-download PDF */
   document.getElementById('form-screen').style.display = 'none';
@@ -810,8 +821,8 @@ async function submitForm() {
 /* ──────────────────────────────────────────
    PDF GENERATION
 ────────────────────────────────────────── */
-function downloadPDF() {
-  if (!RESULT) return;
+function buildPDF() {
+  if (!RESULT) return null;
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
   const PW = 210, ML = 16, MR = 16, CW = PW - ML - MR;
@@ -990,7 +1001,12 @@ function downloadPDF() {
     doc.text(`Página ${p} / ${pageCount}`, PW - MR, 291, { align:'right' });
   }
 
-  /* save */
+  return doc;
+}
+
+function downloadPDF() {
+  const doc = buildPDF();
+  if (!doc) return;
   const safeName = RESULT.nome.replace(/\s+/g,'_').replace(/[^a-zA-Z0-9_]/g,'');
   const safeDate = RESULT.data.replace(/\//g,'-');
   doc.save(`SNAP-IV_${safeName}_${safeDate}.pdf`);
