@@ -726,6 +726,12 @@ function onAnswer() {
   setScore('sc-A','sc-Ap', dA);
   setScore('sc-B','sc-Bp', dB);
   setScore('sc-C','sc-Cp', dC);
+  // Total parcial
+  const tS = (dA.score||0)+(dB.score||0)+(dC.score||0);
+  const tP = (dA.pos||0)+(dB.pos||0)+(dC.pos||0);
+  const any = dA.score!==null||dB.score!==null||dC.score!==null;
+  document.getElementById('sc-total').textContent     = any ? tS : '—';
+  document.getElementById('sc-total-pos').textContent = any ? tP : '—';
 }
 
 /* ──────────────────────────────────────────
