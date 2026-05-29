@@ -664,12 +664,11 @@ const OPTIONS = [
         ).join('') +
       `</div>`;
     container.appendChild(div);
+    // Attach listeners directly to each radio
+    div.querySelectorAll("input[type="radio"]").forEach(function(el){
+      el.addEventListener("change", onAnswer);
+    });
   });
-});
-
-// Event delegation - CSP safe
-document.addEventListener("change", function(e){
-  if(e.target.classList.contains("r-input")) onAnswer();
 });
 
 // Default date = today
