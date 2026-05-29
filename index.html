@@ -677,7 +677,7 @@ const OPTIONS = [
       `</div>`;
     container.appendChild(div);
     // Attach listeners directly to each radio
-    div.querySelectorAll("input[type="radio"]").forEach(function(el){
+    div.querySelectorAll('input[type="radio"]').forEach(function(el){
       el.addEventListener("change", onAnswer);
     });
   });
