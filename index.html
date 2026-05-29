@@ -918,9 +918,9 @@ function buildPDF() {
   /* ── RESULTS TABLE ── */
   doc.autoTable({
     startY: Y,
-    head: [['Dominio', 'Itens', 'Pontuacao', 'Itens positivos', 'Referencia clinica']],
+    head: [['Domínio', 'Itens', 'Pontuação', 'Itens positivos', 'Ref. Clínica']],
     body: [
-      ['Desatencao',             '1-9',   RESULT.dA.score, RESULT.dA.pos, 'Contar respostas 2 ou 3'],
+      ['Desatenção',             '1-9',   RESULT.dA.score, RESULT.dA.pos, 'Contar respostas 2 ou 3'],
       ['Hiperatividade/Impuls.', '10-18', RESULT.dB.score, RESULT.dB.pos, 'Contar respostas 2 ou 3'],
       ['Sint. Opositivos',       '19-25', RESULT.dC.score, RESULT.dC.pos, 'Contar respostas 2 ou 3'],
     ],
@@ -951,17 +951,21 @@ function buildPDF() {
 
   /* ── TOTAL BOX ── */
   const tY = doc.lastAutoTable.finalY;
+  // Total box
+  const tP2 = RESULT.dA.pos+RESULT.dB.pos+RESULT.dC.pos;
   doc.setFillColor(28,95,110);
-  doc.roundedRect(ML, tY+4, CW, 14, 2, 2, 'F');
+  doc.roundedRect(ML, tY+4, CW, 18, 2, 2, 'F');
   doc.setFont('helvetica','bold');
-  doc.setFontSize(9);
+  doc.setFontSize(7.5);
+  doc.setTextColor(180,220,228);
+  doc.text('PONTUAÇÃO TOTAL', ML+6, tY+11);
+  doc.text('ITENS POSITIVOS', ML+CW-6, tY+11, {align:'right'});
+  doc.setFontSize(16);
   doc.setTextColor(255,255,255);
-  doc.text('PONTUACAO TOTAL', ML+6, tY+13);
-  doc.setFontSize(13);
-  doc.text(`${RESULT.total}/75`, ML + CW - 6, tY+13, {align:'right'});
-  doc.setFontSize(8.5);
-  doc.text(`Itens positivos: ${RESULT.dA.pos+RESULT.dB.pos+RESULT.dC.pos}/25`, ML + CW/2, tY+13, {align:'center'});
-  Y = tY + 22;
+  doc.text(`${RESULT.total}/75`, ML+6, tY+20);
+  doc.setTextColor(201,152,90);
+  doc.text(`${tP2}/25`, ML+CW-6, tY+20, {align:'right'});
+  Y = tY + 26;
 
   /* ── DETAILED QUESTIONS per domain ── */
   const domains = [
