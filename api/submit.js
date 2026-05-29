@@ -48,7 +48,7 @@ module.exports = async function handler(req, res) {
       </div>`;
 
     const payload = {
-      from: 'SNAP-IV Emanah <onboarding@resend.dev>',
+      from: 'SNAP-IV Emanah <noreply@bomfuturo.com.br>',
       to: ['dani_lbc@hotmail.com', 'jean_toya@hotmail.com'],
       subject: `SNAP-IV - ${nome} - ${data}`,
       html: htmlBody,
